@@ -1,0 +1,11 @@
+screensaver-tools.py
+====================
+
+This small daemon serves two basic functions:
+ * Provides a status-bar icon with one-click enabling and disabling of the
+   screensaver.
+ * Attempts to set an Away message when the screensaver locks the screen and
+   reverts to previous status message on unlock.
+
+For a description of (optional) command-line arguments, see --help.
+
