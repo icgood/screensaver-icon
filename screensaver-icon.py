@@ -44,6 +44,7 @@ class State(object):
         self.pidgin = Pidgin(self, args)
 
     def main(self):
+        gobject.timeout_add(2500, self.screensaver.refresh_on_status)
         try:
             gtk.main()
         finally:
@@ -122,7 +123,6 @@ class XScreensaver(object):
         self._on_status_process = None
         self._watch_process = None
         self._start_watch()
-        self.refresh_on_status()
 
     def kill_watch_process(self):
         try:
