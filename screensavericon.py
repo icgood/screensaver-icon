@@ -476,7 +476,7 @@ def _daemonize():
     os.dup2(se.fileno(), sys.stderr.fileno())
 # }}}
 
-if __name__ == '__main__':
+def main():
     args = _parse_args()
 
     state = State(args)
@@ -484,5 +484,8 @@ if __name__ == '__main__':
         _daemonize()
 
     state.main()
+
+if __name__ == '__main__':
+    main()
 
 # vim:et:fdm=marker:sts=4:sw=4:ts=4
