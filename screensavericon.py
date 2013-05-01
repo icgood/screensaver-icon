@@ -33,7 +33,7 @@ import gobject
 import pygtk
 import gtk
 
-_VERSION = '0.0'
+_VERSION = '1.0'
 
 # {{{ class State
 class State(object):
