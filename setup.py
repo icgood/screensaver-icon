@@ -8,7 +8,8 @@ setup(name='screensaver-icon',
       description='Displays an icon to control xscreensaver.',
       author='Ian Good',
       author_email='ian.good@rackspace.com',
-      py_modules=['screensavericon'],
+      packages=find_packages(),
+      package_data={'screensavericon': ['icons/*.png']},
       entry_points={'console_scripts': [
               'screensaver-icon = screensavericon:main',
           ]})
