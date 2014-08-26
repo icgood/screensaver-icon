@@ -33,7 +33,7 @@ import gobject
 import pygtk
 import gtk
 
-_VERSION = '1.1'
+_VERSION = '1.2'
 
 # {{{ class State
 class State(object):
@@ -57,7 +57,8 @@ class State(object):
         self.screensaver.refresh_on_status()
 
     def got_blank_trigger(self):
-        pass
+        if self.icon.get_away_on_lock():
+            self.pidgin.set_away()
 
     def got_unblank_trigger(self):
         if self.icon.get_away_on_lock():
