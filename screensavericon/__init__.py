@@ -1,4 +1,7 @@
 #!/usr/bin/env python2.7
+
+"""Adds a GTK status-bar icon allowing one-click control of the screensaver."""
+
 LICENSE = """\
 Copyright (c) 2012 Ian Good <ian.good@rackspace.com>
 
@@ -19,23 +22,21 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-"""
+"""  # NOQA
 
 import os
 import sys
 import subprocess
-import base64
-import zlib
 import argparse
+import pkg_resources
 
 import dbus
 import gobject
-import pygtk
 import gtk
 
-_VERSION = '1.2'
+__version__ = pkg_resources.require('screensaver-icon')[0].version
 
-# {{{ class State
+
 class State(object):
 
     def __init__(self, args):
@@ -71,9 +72,7 @@ class State(object):
     def icon_clicked(self):
         self.screensaver.toggle_on()
 
-# }}}
 
-# {{{ class Pidgin
 class Pidgin(object):
 
     def __init__(self, state, args):
@@ -112,9 +111,7 @@ class Pidgin(object):
         except dbus.exceptions.DBusException:
             return None
 
-# }}}
 
-# {{{ class XScreensaver
 class XScreensaver(object):
 
     def __init__(self, state, args):
@@ -144,7 +141,8 @@ class XScreensaver(object):
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
         p.stdin.close()
-        gobject.io_add_watch(p.stdout, gobject.IO_HUP, self._on_status_finished)
+        gobject.io_add_watch(p.stdout, gobject.IO_HUP,
+                             self._on_status_finished)
         self._on_status_process = p
 
     def _start_watch(self, *extras):
@@ -199,9 +197,7 @@ class XScreensaver(object):
             self.state.got_lock_trigger()
         return True
 
-# }}}
 
-# {{{ class Icon
 class Icon(object):
 
     def __init__(self, state, args):
@@ -213,7 +209,7 @@ class Icon(object):
 
     def _load_icons(self, args):
         def load_default(name):
-            from pkg_resources import Requirement, resource_filename
+            from pkg_resources import resource_filename
             resource_name = 'icons/{0}.png'.format(name)
             fn = resource_filename(__name__, resource_name)
             return gtk.gdk.pixbuf_new_from_file(fn)
@@ -264,7 +260,6 @@ class Icon(object):
         aol = gtk.CheckMenuItem("Away On Lock")
         aol.set_active(self._away_on_lock)
 
-        separator = gtk.SeparatorMenuItem()
         refresh = gtk.ImageMenuItem("Refresh")
         about = gtk.ImageMenuItem("About")
         quit = gtk.ImageMenuItem("Quit")
@@ -297,7 +292,7 @@ class Icon(object):
         menu.show_all()
 
         menu.popup(None, None, gtk.status_icon_position_menu,
-                               button, timestamp, icon)
+                   button, timestamp, icon)
 
     def _left_click(self, icon):
         self.state.icon_clicked()
@@ -307,33 +302,33 @@ class Icon(object):
 
         about.set_destroy_with_parent(True)
         about.set_name("Screensaver Icon")
-        about.set_version(_VERSION)
+        about.set_version(__version__)
         about.set_authors(["Ian Good <ian.good@rackspace.com>"])
         about.set_license(LICENSE)
 
         about.set_comments("""Provides a status-bar icon letting single-click \
-enabling a disabling of the xscreensaver daemon. Also, pidgin sessions will be \
-marked "Away" while the screensaver is engaged.""")
+enabling a disabling of the xscreensaver daemon. Also, pidgin sessions will \
+be marked "Away" while the screensaver is engaged.""")
 
         about.run()
         about.destroy()
 
-# }}}
 
-# {{{ _parse_args()
 def _parse_args():
-    parser = argparse.ArgumentParser(description='Adds a GTK status-bar icon allowing one-click control of the screensaver.')
-    parser.add_argument('-v', '--version', action='version', version='%(prog)s '+_VERSION)
-    parser.add_argument('-f', '--foreground', action='store_true', dest='foreground',
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-v', '--version', action='version',
+                        version='%(prog)s '+__version__)
+    parser.add_argument('-f', '--foreground', action='store_true',
                         help='Run in the foreground, do not daemonize.')
     parser.add_argument('--on-icon', dest='onicon', metavar='FILE',
-                        help='Use FILE icon indicating screensaver is on and activated.')
+                        help='Use FILE icon indicating screensaver is on and '
+                        'activated.')
     parser.add_argument('--off-icon', dest='officon', metavar='FILE',
-                        help='Use FILE icon indicating screensaver is off and disabled.')
+                        help='Use FILE icon indicating screensaver is off and '
+                        'disabled.')
     return parser.parse_args()
-# }}}
 
-# {{{ _daemonize()
+
 # Daemonize the current process.
 def _daemonize():
 
@@ -370,7 +365,7 @@ def _daemonize():
     os.dup2(si.fileno(), sys.stdin.fileno())
     os.dup2(so.fileno(), sys.stdout.fileno())
     os.dup2(se.fileno(), sys.stderr.fileno())
-# }}}
+
 
 def main():
     args = _parse_args()
@@ -380,6 +375,7 @@ def main():
         _daemonize()
 
     state.main()
+
 
 if __name__ == '__main__':
     main()

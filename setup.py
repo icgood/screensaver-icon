@@ -1,10 +1,9 @@
 
 from setuptools import setup, find_packages
 
-from screensavericon import _VERSION
 
 setup(name='screensaver-icon',
-      version=_VERSION,
+      version='1.2',
       description='Displays an icon to control xscreensaver.',
       author='Ian Good',
       author_email='ian.good@rackspace.com',
